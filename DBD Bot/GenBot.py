@@ -5,6 +5,7 @@ import keyboard
 from PIL import Image
 import math
 import numpy as np
+import os
 import Detector
 
 
@@ -16,7 +17,7 @@ time.sleep(2)
 
 
 def skillCheckDetector(): #detects if there is a skill check
-    space = pyautogui.locateCenterOnScreen("space.png",region=(860,440,200,200), confidence=0.5) #detects if the space image is on the screen (if resolution is different you may need to change the region)
+    space = pyautogui.locateCenterOnScreen("space.png", confidence=0.8) #detects if the space image is on the screen (if resolution is different you may need to change the region)
 
     if(space != None):
         print("skill check")
@@ -25,7 +26,7 @@ def skillCheckDetector(): #detects if there is a skill check
 
 
 def whitchSkillCheck(): #detects whitch skill check it is (wiggle or non wiggle)
-    wiggleText = pyautogui.locateCenterOnScreen("wiggle text.png", region=(825,830,75,30), confidence=0.8) #detects if the wiggle text at the bottom of the screen (if resolution is different you may need to change the region)
+    wiggleText = pyautogui.locateCenterOnScreen(os.path.join('resources',"wiggle text.png"), confidence=0.8) #detects if the wiggle text at the bottom of the screen (if resolution is different you may need to change the region)
 
     if(wiggleText != None):
         print("wiggle skill check")
@@ -132,9 +133,9 @@ else:
     exit """
 
 while(keyboard.is_pressed("q") == False):
-    if(Detector.skillCheckDetector == "regular skill check"): #if there is a skill check
+    if(Detector.skillCheckDetector() == "regular skill check"): #if there is a skill check
         regularSkillCheck()
 
-    elif(Detector.skillCheckDetector == "wiggle"):
+    elif(Detector.skillCheckDetector() == "wiggle"):
         wiggleSkillCheck()
                 
