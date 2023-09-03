@@ -6,7 +6,6 @@ from PIL import Image
 import math
 import numpy as np
 import os
-import Detector
 
 
 #(860,440,200,200) skill check area
@@ -16,17 +15,29 @@ import Detector
 time.sleep(2)
 
 
-def skillCheckDetector(): #detects if there is a skill check
-    space = pyautogui.locateCenterOnScreen("space.png", confidence=0.8) #detects if the space image is on the screen (if resolution is different you may need to change the region)
+""" def skillCheckDetector(): #detects if there is a skill check
+    space = pyautogui.locateCenterOnScreen("space.png",region=(860,440,200,200), confidence=0.5) #detects if the space image is on the screen (if resolution is different you may need to change the region)
 
     if(space != None):
         print("skill check")
         return True
-    return False
+    return False """
+
+
+def findSkillCheckCoords():
+    #space = pyautogui.locateCenterOnScreen("space.png", confidence=0.8)
+    space = pyautogui.locateCenterOnScreen(os.path.join('resources',"space.png"), confidence=0.9)
+
+    if (space != None):
+        print(f"skill check at {space[0]} {space[1]}")
+        return space[0]-1, space[1]
+    
+    return [0,0]
 
 
 def whitchSkillCheck(): #detects whitch skill check it is (wiggle or non wiggle)
-    wiggleText = pyautogui.locateCenterOnScreen(os.path.join('resources',"wiggle text.png"), confidence=0.8) #detects if the wiggle text at the bottom of the screen (if resolution is different you may need to change the region)
+    #wiggleText = pyautogui.locateCenterOnScreen("wiggle text.png", confidence=0.8) #detects if the wiggle text at the bottom of the screen (if resolution is different you may need to change the region)
+    wiggleText = pyautogui.locateCenterOnScreen(os.path.join('resources',"wiggle text.png"), confidence=0.8)
 
     if(wiggleText != None):
         print("wiggle skill check")
@@ -36,10 +47,10 @@ def whitchSkillCheck(): #detects whitch skill check it is (wiggle or non wiggle)
     return "regular skill check"
 
 
-def skillCheck():
-    if(skillCheckDetector()):
-        skillCheck = whitchSkillCheck()
-        return skillCheck
+def skillCheckDetector():
+    if(findSkillCheckCoords() != [0,0]):
+        skillCheckType = whitchSkillCheck()
+        return skillCheckType
 
 
 
@@ -133,9 +144,9 @@ else:
     exit """
 
 while(keyboard.is_pressed("q") == False):
-    if(Detector.skillCheckDetector() == "regular skill check"): #if there is a skill check
+    if(skillCheckDetector() == "regular skill check"): #if there is a skill check
         regularSkillCheck()
 
-    elif(Detector.skillCheckDetector() == "wiggle"):
+    elif(skillCheckDetector == "wiggle"):
         wiggleSkillCheck()
                 
