@@ -7,22 +7,41 @@ import math
 import numpy as np
 import os
 
+skillCheackStatus = False
+wiggleStatus = False
+hyperFocus = 0
+
+
+def ToggleSkillChecks():
+    global skillCheackStatus
+    skillCheackStatus = not skillCheackStatus
+    if skillCheackStatus:
+        print("Skill checks on!")
+    else:
+        print("Skill checks off!")
+
+def ToggleWiggle():
+    global wiggleStatus
+    wiggleStatus = not wiggleStatus
+    if wiggleStatus:
+        print("Wiggle on!")
+    else:
+        print("Wiggle off!")
+
+def ToggleHyperFocus():
+    global hyperFocus
+    hyperFocus_on = 0.4
+    if(hyperFocus == hyperFocus_on):
+        hyperFocus = 0
+        print("Hyper Focus off!")
+    else:
+        hyperFocus = hyperFocus_on
+        print("Hyper Focus on!")
+    
 
 #(860,440,200,200) skill check area
 #(825,830,75,30) wiggle text area (bottom)
 #960,525,65 circle center x, center y, radius
-
-time.sleep(2)
-
-
-""" def skillCheckDetector(): #detects if there is a skill check
-    space = pyautogui.locateCenterOnScreen("space.png",region=(860,440,200,200), confidence=0.5) #detects if the space image is on the screen (if resolution is different you may need to change the region)
-
-    if(space != None):
-        print("skill check")
-        return True
-    return False """
-
 
 def findSkillCheckCoords():
     #space = pyautogui.locateCenterOnScreen("space.png", confidence=0.8)
@@ -72,7 +91,6 @@ def findWhitePlaceOnCircle(centerX, centerY, radius,):
 
 def regularSkillCheck():
     count = 0
-    hyperFocus = 0
     whitePlaces = findWhitePlaceOnCircle(960,525,65)
     whitePlaces = whitePlaces[0]
     print(whitePlaces)
@@ -90,7 +108,7 @@ def regularSkillCheck():
         time.sleep(0.01)
         return
 
-    elif(count == 1 and x >= 937):
+    elif(count == 1 and x >= 930):
         print("middle space")
         count = 0
         time.sleep(0.008 + 0.008*hyperFocus)
@@ -121,32 +139,32 @@ def wiggleSkillCheck():
                 pyautogui.press("space")
                 time.sleep(0.3) """
     
-    if(pyautogui.pixelMatchesColor(895,525,(255,255,255), tolerance=20) == False or pyautogui.pixelMatchesColor(1025,525,(255,255,255), tolerance=20) == False):
-        print("wiggle")
-        print(pyautogui.pixel(895,525) , pyautogui.pixel(1025,525))
-        time.sleep(0)
-        pyautogui.press("space")
-        time.sleep(0.13)
+    colors_to_check = [(255, 255, 255), (227, 190, 47), (254, 0, 0)]
+
+    for color in colors_to_check:
+        if (pyautogui.pixelMatchesColor(895, 525, color, tolerance=40) and pyautogui.pixelMatchesColor(1025, 525, color, tolerance=40)):
+            print("no wiggle")
+            return
+
+
+    #if(pyautogui.pixelMatchesColor(895,525,(255,255,255), tolerance=40) == False or pyautogui.pixelMatchesColor(1025,525,(255,255,255), tolerance=40) == False):
+    print("wiggle")
+    print(pyautogui.pixel(895,525) , pyautogui.pixel(1025,525))
+    time.sleep(0)
+    pyautogui.press("space")
+    time.sleep(0.13) 
                 
 
 
-
-
+time.sleep(2)
 #while(gw.getActiveWindowTitle() == "DeadByDaylight  "):
-""" count = 0
-hyperFocus = input("are you running hyperFocus (Y/N)? ")
-if(hyperFocus == "Y" or hyperFocus == "y"):
-    hyperFocus = 0.4
-elif(hyperFocus == "N" or hyperFocus == "n"):
-    hyperFocus = 0
-else:
-    print("I SAID Y OR N, try again")
-    exit """
-
+keyboard.on_press_key("F1", lambda _: ToggleSkillChecks())
+keyboard.on_press_key("F2", lambda _: ToggleWiggle())
+keyboard.on_press_key("F3", lambda _: ToggleHyperFocus())
 while(keyboard.is_pressed("q") == False):
-    if(skillCheckDetector() == "regular skill check"): #if there is a skill check
-        regularSkillCheck()
+    while(gw.getActiveWindowTitle() == "DeadByDaylight  "):
+        if(skillCheckDetector() == "regular skill check" and skillCheackStatus): #if there is a skill check
+            regularSkillCheck()
 
-    elif(skillCheckDetector == "wiggle"):
-        wiggleSkillCheck()
-                
+        elif(skillCheckDetector() == "wiggle" and wiggleStatus):
+            wiggleSkillCheck()
